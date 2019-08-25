@@ -1376,12 +1376,11 @@ public:
     //
     void printAsyncOps(std::ostream &s = std::cerr)
     {
-        #if 0
         std::lock_guard<std::recursive_mutex> lg(qmutex);
         hsa_signal_value_t oldv=0;
         s << *this << " : " << asyncOps.size() << " op entries\n";
-        for (int i=0; i<asyncOps.size(); i++) {
-            const std::shared_ptr<HSAOp> &op = asyncOps[i];
+        int i=0;
+        for (const std::shared_ptr<HSAOp> &op : asyncOps) {
             s << "index:" << std::setw(4) << i ;
             if (op != nullptr) {
                 s << " op#"<< op->getSeqNum() ;
@@ -1411,9 +1410,8 @@ public:
                 s << " op <nullptr>";
             }
             s  << "\n";
-
+            i++;
         }
-        #endif
     }
 
     // Save the command and type
@@ -1621,16 +1619,12 @@ public:
             DBOUT(DB_CMD2, "No future found in wait, enqueued marker into " << *this << "\n");
         }
         asyncOps.back()->getFuture()->wait();
-<<<<<<< HEAD
-<<<<<<< HEAD
         if (HCC_FLUSH_ON_WAIT) {
             // aggressively cleanup resources
             // but keep back() as a valid HSAOp
             while (asyncOps.size()>1)
                 asyncOps.pop_front();
         }
-=======
->>>>>>> c1e6980237315557da7857cb7c9ea06578126254
     }
 
     void LaunchKernel(void *ker, size_t nr_dim, size_t *global, size_t *local) override {
